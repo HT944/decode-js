@@ -60,7 +60,10 @@ function procAssignment(path) {
   }
   insertPath.insertBefore(t.expressionStatement(path.node))
   path.replaceWith(path.node.left)
-  insertPath.scope.crawl()
+  // Crawl from the program scope: a moved assignment can reference bindings in
+  // an enclosing scope, so crawling only insertPath.scope would leave those
+  // outer bindings with stale reference counts.
+  insertPath.scope.getProgramParent().crawl()
 }
 
 /**
